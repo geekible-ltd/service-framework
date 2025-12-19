@@ -20,6 +20,7 @@ type FrameworkConfig struct {
 	JWTSecret   string         `json:"jwt_secret"`
 	DBType      DatabaseType   `json:"db_type"`
 	DbCfg       DatabaseConfig `json:"db_cfg"`
+	CORSCfg     CORSCfg        `json:"cors_cfg"`
 }
 
 type DatabaseConfig struct {
@@ -29,4 +30,10 @@ type DatabaseConfig struct {
 	Password string `json:"password"`
 	Database string `json:"database"`
 	SSLMode  string `json:"ssl_mode"`
+}
+
+type CORSCfg struct {
+	AllowedOrigins []string `json:"allowed_origins"`
+	AllowedMethods []string `json:"allowed_methods"`
+	AllowedHeaders []string `json:"allowed_headers"`
 }
