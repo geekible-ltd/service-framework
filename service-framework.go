@@ -3,6 +3,7 @@ package serviceframework
 import (
 	frameworkdto "github.com/geekible-ltd/serviceframework/framework-dto"
 	"github.com/geekible-ltd/serviceframework/internal/config"
+	"github.com/geekible-ltd/serviceframework/internal/middleware"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -29,6 +30,17 @@ func (s *ServiceFramework) GetDatabase() *gorm.DB {
 	return s.db
 }
 
-func (s *ServiceFramework) GetRouter() *gin.Engine {
+func (s *ServiceFramework) GetRouter(requestPerSecond, burst int) *gin.Engine {
+	if s.router == nil {
+		panic("router is not initialized")
+	}
+
+	s.router.Use(middleware.CORSMiddleware(s.cfg.CORSCfg))
+	s.router.Use(middleware.RateLimitMiddleware(requestPerSecond, burst))
+
+	if s.cfg.Environment == frameworkdto.EnvDev {
+		s.router.Use(gin.Logger())
+	}
+
 	return s.router
 }

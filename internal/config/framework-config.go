@@ -17,7 +17,6 @@ type FrameworkConfiguration struct {
 }
 
 func NewFrameworkConfig(cfg *frameworkdto.FrameworkConfig) *FrameworkConfiguration {
-
 	var fc FrameworkConfiguration
 
 	switch cfg.DBType {
@@ -28,6 +27,9 @@ func NewFrameworkConfig(cfg *frameworkdto.FrameworkConfig) *FrameworkConfigurati
 	case frameworkdto.DatabaseTypeSQLite:
 		fc.db = connectToSQLite(cfg)
 	}
+
+	fc.router = buildGinEngine()
+
 	return &fc
 }
 
@@ -116,6 +118,14 @@ func connectToSQLite(cfg *frameworkdto.FrameworkConfig) *gorm.DB {
 		panic(err)
 	}
 	return db
+}
+
+func buildGinEngine() *gin.Engine {
+	router := gin.Default()
+	router.Use(gin.Recovery())
+	router.Use(gin.Logger())
+
+	return router
 }
 
 func (c *FrameworkConfiguration) GetDatabase() *gorm.DB {
