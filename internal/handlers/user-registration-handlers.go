@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"net/http"
-
 	frameworkconstants "github.com/geekible-ltd/serviceframework/framework-constants"
 	frameworkdto "github.com/geekible-ltd/serviceframework/framework-dto"
 	frameworkutils "github.com/geekible-ltd/serviceframework/framework-utils"
@@ -51,7 +49,7 @@ func (h *RegistrationHandlers) RegisterTenant(c *gin.Context) {
 		return
 	}
 
-	frameworkutils.SuccessResponse(c, http.StatusOK, nil, "Tenant registered successfully")
+	frameworkutils.CreatedResponse(c, nil, "Tenant registered successfully")
 }
 
 func (h *RegistrationHandlers) AddUser(c *gin.Context) {
@@ -73,5 +71,5 @@ func (h *RegistrationHandlers) AddUser(c *gin.Context) {
 		return
 	}
 
-	frameworkutils.SuccessResponse(c, http.StatusOK, nil, "User added successfully")
+	frameworkutils.CreatedResponse(c, nil, "User added successfully")
 }
