@@ -25,6 +25,14 @@ func (r *UserRepository) GetByID(userId, tenantId uint) (*entities.User, error) 
 	return &user, nil
 }
 
+func (r *UserRepository) GetByResetPasswordToken(resetPasswordToken string) (*entities.User, error) {
+	var user entities.User
+	if err := r.db.Where("reset_password_token = ?", resetPasswordToken).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 func (r *UserRepository) Update(user *entities.User) error {
 	return r.db.Save(user).Error
 }

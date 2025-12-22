@@ -25,9 +25,9 @@ func (h *RegistrationHandlers) RegisterRoutes(router *gin.Engine) {
 	api := router.Group("/registration")
 	api.POST("/tenant", h.RegisterTenant)
 
-	api.Use(middleware.BearerAuthMiddleware(h.jwtSecret))
+	protected := api.Use(middleware.BearerAuthMiddleware(h.jwtSecret))
 	{
-		api.POST("/user", h.AddUser)
+		protected.POST("/user", h.AddUser)
 	}
 }
 

@@ -82,7 +82,7 @@ func (s *UserRegistrationService) RegisterTenant(tenantDTO frameworkdto.TenantRe
 		ResetPasswordToken:              "",
 		ResetPasswordTokenExpiresAt:     nil,
 		IsEmailVerified:                 false,
-		EmailVerificationToken:          "",
+		EmailVerificationToken:          uuid.New().String(),
 		EmailVerificationTokenExpiresAt: nil,
 	}
 	if err := s.userRepo.Create(&user); err != nil {
@@ -141,7 +141,7 @@ func (s *UserRegistrationService) RegisterUser(tenantId uint, userDTO frameworkd
 		ResetPasswordToken:              "",
 		ResetPasswordTokenExpiresAt:     nil,
 		IsEmailVerified:                 false,
-		EmailVerificationToken:          "",
+		EmailVerificationToken:          uuid.New().String(),
 		EmailVerificationTokenExpiresAt: nil,
 	}
 	if err := s.userRepo.Create(&user); err != nil {
