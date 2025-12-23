@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	frameworkdto "github.com/geekible-ltd/serviceframework/framework-dto"
+	"github.com/geekible-ltd/serviceframework/internal/entities"
+	"github.com/geekible-ltd/serviceframework/internal/repositories"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -27,6 +29,18 @@ func NewFrameworkConfig(cfg *frameworkdto.FrameworkConfig) *FrameworkConfigurati
 	case frameworkdto.DatabaseTypeSQLite:
 		fc.db = connectToSQLite(cfg)
 	}
+
+	err := fc.db.AutoMigrate(&entities.Tenant{}, &entities.User{}, &entities.TenantLicence{}, &entities.LicenceType{})
+	if err != nil {
+		panic(err)
+	}
+
+	licenceTypeRepo := repositories.NewLicenceTypeRepository(fc.db)
+	licenceTypeRepo.Create(entities.LicenceType{
+		Name:        "Free",
+		Description: "Free licence type",
+		MaxSeats:    1,
+	}, true)
 
 	fc.router = buildGinEngine()
 

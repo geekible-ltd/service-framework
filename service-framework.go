@@ -5,6 +5,8 @@ import (
 	"github.com/geekible-ltd/serviceframework/internal/config"
 	"github.com/geekible-ltd/serviceframework/internal/handlers"
 	"github.com/geekible-ltd/serviceframework/internal/middleware"
+	"github.com/geekible-ltd/serviceframework/internal/repositories"
+	"github.com/geekible-ltd/serviceframework/internal/services"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -45,6 +47,26 @@ func (s *ServiceFramework) GetRouter(requestPerSecond, burst int) *gin.Engine {
 	}
 
 	handlers.NewHealthHandlers().RegisterRoutes(s.router)
+
+	// Register Repos
+	userRepo := repositories.NewUserRepository(s.db)
+	tenantRepo := repositories.NewTenantRepository(s.db)
+	tenantLicenceRepo := repositories.NewTenantLicenceRepository(s.db)
+	licenceTypeRepo := repositories.NewLicenceTypeRepository(s.db)
+
+	// Register Services
+	loginService := services.NewLoginService(s.cfg, userRepo, tenantRepo)
+	licenceTypeService := services.NewLicenceTypeService(licenceTypeRepo)
+	registrationService := services.NewUserRegistrationService(userRepo, tenantRepo, tenantLicenceRepo, licenceTypeRepo)
+	tenantService := services.NewTenantService(tenantRepo)
+	userMaintenanceService := services.NewUserMaintenanceService(userRepo)
+
+	// Register login handlers
+	handlers.NewLoginHandlers(loginService).RegisterRoutes(s.router)
+	handlers.NewLicenceTypeHandler(s.cfg.JWTSecret, licenceTypeService).RegisterRoutes(s.router)
+	handlers.NewRegistrationHandlers(s.cfg.JWTSecret, registrationService).RegisterRoutes(s.router)
+	handlers.NewUserMaintenanceHandler(s.cfg.JWTSecret, userMaintenanceService).RegisterRoutes(s.router)
+	handlers.NewTenantHandler(s.cfg.JWTSecret, tenantService).RegisterRoutes(s.router)
 
 	return s.router
 }
